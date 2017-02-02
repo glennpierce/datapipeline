@@ -133,6 +133,9 @@ impl Element for ConsoleEchoElement {
 }
 
 
+struct ElementPipeline {
+    elements : Vec<Element>,
+}
 
 
 
