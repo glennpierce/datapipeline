@@ -10,13 +10,13 @@ use std::sync::Arc;
 
 
 struct Element {
-    comm : Arc<(Sender<String>, Receiver<String>)>,
+    comm : (Sender<String>, Receiver<String>),
 }
 
 impl Element {
     pub fn new(name : String) -> Self {
         Element{
-            comm : Arc::new(mpsc::channel()),
+            comm : mpsc::channel(),
         }
     }
 }
@@ -32,8 +32,23 @@ impl FileSourceElement {
         element
     }
 
+// https://aturon.github.io/stability-dashboard/std/sync/deque/index.html
+
     fn run(&self) {
 
+
+        let mut local_comm = self.base.comm.0.clone();
+        //let mut local_comm_rx = self.base.comm.1.clone();
+        
+        thread::spawn(move|| {
+            let mut reader = BufReader::new(&self.file);
+            for line in reader.lines() {
+                let l = line.unwrap();
+                local_comm.send(l).unwrap();
+            }
+        });
+
+/*
         let mut local_comm = self.base.comm.clone();
 
         // Spawn off an expensive computation
@@ -48,6 +63,9 @@ impl FileSourceElement {
              }
 
         });
+        */
+
+
     }
 }
 
