@@ -137,22 +137,32 @@ impl<'a> Pipeline<'a> {
     }
 
     pub fn add_element(&mut self, element : &'a Element) -> PipelineResult<&'a Element> {
-     
-        let found_element = (&self).find_element(element.get_name());
-        
-        match found_element {
-            Some(found_element) => {
-                // fallback in case of failure.
-                // you could log the error, panic, or do anything else.
+        if let Some(found_element) = self.find_element(element.get_name()) {
                 debug!("Element with that name already exits in pipeline");
                 return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-            }
-            None => {
-                self.elements.push(element);
-                return Ok(element)  
-            }
-        };
+        }; // <-- immutable borrow ends here
+        // now you can re-borrow mutably
+        self.elements.push(element);
+        Ok(element) 
     }
+
+    // pub fn add_element(&mut self, element : &'a Element) -> PipelineResult<&'a Element> {
+     
+    //     let found_element = (&self).find_element(element.get_name());
+        
+    //     match found_element {
+    //         Some(found_element) => {
+    //             // fallback in case of failure.
+    //             // you could log the error, panic, or do anything else.
+    //             debug!("Element with that name already exits in pipeline");
+    //             return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
+    //         }
+    //         None => {
+    //             self.elements.push(element);
+    //             return Ok(element)  
+    //         }
+    //     };
+    // }
 
     pub fn find_element(&self, name : &str) -> Option<&&Element> {
         return self.elements.iter().find(|&&e| e.get_name() == name);
