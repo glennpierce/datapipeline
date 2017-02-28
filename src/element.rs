@@ -54,7 +54,6 @@ impl ElementPad {
 pub trait Element {
     //fn new(&mut self) -> Self;
     
-    fn next(&self) -> &Element;
     fn pipeline(&self) -> &Element;
 
     fn initalise(&mut self);

@@ -22,7 +22,7 @@ impl<'a> FileSourceElement<'a> {
 impl<'a> Element for FileSourceElement<'a> {
     
     fn next(&self) -> &Element {
-        return self.next;
+        return self.base.next();
     }
 
     fn pipeline(&self) -> &Element {

@@ -24,7 +24,7 @@ impl<'a> Pipeline<'a> {
             name : name,
             next : None,
             pipeline : None,
-            //elements : Vec::new(),
+            elements : Vec::new(),
             data_queue : Vec::new(),
         }
     }
