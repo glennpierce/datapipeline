@@ -15,9 +15,11 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::BufRead;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::rc::Weak;
 
 mod element;
+mod test_element;
 mod base_element;
 mod pipeline;
 mod file_source_element;
@@ -108,17 +110,23 @@ mod tests {
 
         use pipeline::Pipeline;
         use element::Element;
-        use file_source_element::FileSourceElement;
+        use test_element::TestElement;
+        //use file_source_element::FileSourceElement;
         //use ::ConsoleEchoElement;
         use std::fs::File;
+        use std::sync::Arc;
+        use std::sync::Mutex;
 
         match File::open("data/test.txt") {
             Ok(file) => {
 
-                let pipeline = Pipeline::new("example pipeline".to_string());
+                let mut pipeline = Pipeline::new("example pipeline".to_string());
 
                 //let file_source_element = FileSourceElement::new("My Source".to_string(), file);
                 //pipeline.add_element(&file_source_element);
+
+                let e1 = TestElement::new();
+                pipeline.add_element(Arc::new(Mutex::new(e1))).unwrap();
 
 
                 pipeline.run();

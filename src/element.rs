@@ -1,3 +1,6 @@
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 #[derive(Debug)]
 pub enum ElementError {
     FAILED_TO_READ_INPUT,
@@ -51,19 +54,20 @@ impl ElementPad {
 
 
 
-pub trait Element {
+pub trait Element : Send {
     //fn new(&mut self) -> Self;
     
-    fn pipeline(&self) -> &Element;
+    // fn pipeline(&self) -> &Element;
 
-    fn initalise(&mut self);
-    fn get_name(&self) -> &str;
+    // fn initalise(&mut self);
+    // fn get_name(&self) -> &str;
     
-    fn run(&self);
+    fn run(&self, position : Arc<AtomicUsize>);
     
-    fn get_previous_element(&self) -> &Element {
+    // fn get_previous_element(&self) -> &Element {
 
-    }
+    // }
+
     // fn attach_output_pad(sink_element : BaseElement, sink : &str) {
     //     //if source.pad_type != ElementPadType.INPUT {
     //     //    panic();
