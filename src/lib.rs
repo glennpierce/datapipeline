@@ -120,16 +120,28 @@ mod tests {
         match File::open("data/test.txt") {
             Ok(file) => {
 
+
                 let mut pipeline = Pipeline::new("example pipeline".to_string());
+                pipeline.add_element(TestElement::new()).unwrap();
+                let handles = pipeline.run();
+                println!("Pipeline started - waiting for {} threads to finish", handles.len());
+                for (i, h) in handles.into_iter().enumerate() {
+                    h.join();
+                    println!("Thread {} finished", i);
+                }
+                println!("Done");
 
-                //let file_source_element = FileSourceElement::new("My Source".to_string(), file);
-                //pipeline.add_element(&file_source_element);
 
-                let e1 = TestElement::new();
-                pipeline.add_element(Arc::new(Mutex::new(e1))).unwrap();
+                // let mut pipeline = Pipeline::new("example pipeline".to_string());
+
+                // //let file_source_element = FileSourceElement::new("My Source".to_string(), file);
+                // //pipeline.add_element(&file_source_element);
+
+                // let e1 = TestElement::new();
+                // pipeline.add_element(Arc::new(Mutex::new(e1))).unwrap();
 
 
-                pipeline.run();
+                // pipeline.run();
 
                 //let echo_element = ConsoleEchoElement::new("My Echo".to_string());
 

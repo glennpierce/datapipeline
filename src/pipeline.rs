@@ -38,43 +38,15 @@ impl Pipeline {
         }
     }
 
-    pub fn add_element(&mut self, element: Arc<Mutex<Element>>) -> PipelineResult<()> {
-        // if let Some(found_element) = self.find_element(element.get_name()) {
-        //         debug!("Element with that name already exits in pipeline");
-        //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-        // }; // <-- immutable borrow ends here
-        // now you can re-borrow mutably
+    pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
+        //     // if let Some(found_element) = self.find_element(element.get_name()) {
+    //     //         debug!("Element with that name already exits in pipeline");
+    //     //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
+    //     // }; // <-- immutable borrow ends here
+    //     // now you can re-borrow mutably
         self.elements.push((Arc::new(Mutex::new(element)), Arc::new(AtomicUsize::new(0))));
         Ok(()) 
     }
-
-    // pub fn add_element(&mut self, element : &'a Element) -> PipelineResult<&'a Element> {
-    //     if let Some(found_element) = self.find_element(element.get_name()) {
-    //             debug!("Element with that name already exits in pipeline");
-    //             return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-    //     }; // <-- immutable borrow ends here
-    //     // now you can re-borrow mutably
-    //     self.elements.push(element);
-    //     Ok(element) 
-    // }
-
-    // pub fn add_element(&mut self, element : &'a Element) -> PipelineResult<&'a Element> {
-     
-    //     let found_element = (&self).find_element(element.get_name());
-        
-    //     match found_element {
-    //         Some(found_element) => {
-    //             // fallback in case of failure.
-    //             // you could log the error, panic, or do anything else.
-    //             debug!("Element with that name already exits in pipeline");
-    //             return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-    //         }
-    //         None => {
-    //             self.elements.push(element);
-    //             return Ok(element)  
-    //         }
-    //     };
-    // }
 
     // pub fn get_first_element(&self) -> &Element {
     //     return self.elements[0];
@@ -84,17 +56,32 @@ impl Pipeline {
     //     return self.elements.iter().find(|&&e| e.get_name() == name);
     // }
 
-    pub fn run(&self) {
+    // pub fn run(&self) {
 
-        loop {
+    //     loop {
 
-            let e = &self.elements[0];
+    //         let e = &self.elements[0];
 
-            thread::spawn(move || {
-                e.0.run(e.1);
-            });
+    //         thread::spawn(move || {
+    //             e.0.run(e.1);
+    //         });
+    //     }
+    // }
+
+
+    pub fn run(&self) -> Vec<thread::JoinHandle<()>>{
+        let mut handles = Vec::with_capacity(self.elements.len());
+        for e in &self.elements {
+            let elem = e.0.clone();
+            let c = e.1.clone();
+            handles.push(thread::spawn(move || {
+                elem.lock().unwrap().run(c);
+            }));
         }
+        handles
     }
+
+
 }
 
 
