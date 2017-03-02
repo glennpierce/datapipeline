@@ -22,7 +22,7 @@ pub struct Pipeline {
 
     //base : BaseElement<'a>,
     elements : Vec<(Arc<Mutex<Element>>, Arc<AtomicUsize>)>,
-    data_queue : Vec<PipeLineStreamFormat>,
+    //data_queue : Vec<PipeLineStreamFormat>,
 
 }
 
@@ -34,7 +34,7 @@ impl Pipeline {
             //next : None,
             //pipeline : None,
             elements : Vec::new(),
-            data_queue : Vec::new(),
+            //data_queue : Vec::new(),
         }
     }
 

@@ -69,7 +69,8 @@ pub trait Element : Send {
     
     fn run(&mut self, position : Arc<AtomicUsize>);
     
-    fn get_pad(&mut self, name: &str) -> &ElementPad;
+    //fn get_input_pads(&mut self) -> &[ElementPad];
+    //fn get_output_pad(&mut self) -> &ElementPad;
 
     // fn get_previous_element(&self) -> &Element {
 
