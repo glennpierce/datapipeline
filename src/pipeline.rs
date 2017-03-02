@@ -15,8 +15,8 @@ pub enum PipeLineError {
     ELEMENT_ALREADY_EXISTS,
 }
 
-type PipelineResult<T> = Result<T, PipeLineError>;
-type PipeLineStreamFormat = (String, String);
+pub type PipelineResult<T> = Result<T, PipeLineError>;
+pub type PipeLineStreamFormat = (String, String);
 
 pub struct Pipeline {
 

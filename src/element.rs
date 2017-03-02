@@ -1,5 +1,8 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
+use pipeline::PipeLineStreamFormat;
+
 
 #[derive(Debug)]
 pub enum ElementError {
@@ -30,6 +33,7 @@ pub struct ElementPad {
     name : String,
     pad_type : ElementPadType,
     pad_data_type: ElementPadDataType,
+    conn : (SyncSender<PipeLineStreamFormat>, Receiver<PipeLineStreamFormat>)
 }
 
 impl ElementPad {
@@ -38,6 +42,7 @@ impl ElementPad {
             name : name,
             pad_type : pad_type,
             pad_data_type : pad_data_type,
+            conn : sync_channel::<PipeLineStreamFormat>(0),
         }
     }
 
