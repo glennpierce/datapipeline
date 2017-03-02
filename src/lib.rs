@@ -117,6 +117,9 @@ mod tests {
         use std::sync::Arc;
         use std::sync::Mutex;
 
+        use std::io::prelude::*;                                                           
+        use std::io;   
+
         match File::open("data/test.txt") {
             Ok(file) => {
 
@@ -124,13 +127,22 @@ mod tests {
                 let mut pipeline = Pipeline::new("example pipeline".to_string());
                 pipeline.add_element(TestElement::new()).unwrap();
                 let handles = pipeline.run();
+                
                 println!("Pipeline started - waiting for {} threads to finish", handles.len());
+
+                pipeline.quick_test(); 
+                
+                io::stdout().flush().ok().expect("Could not flush stdout");
                 for (i, h) in handles.into_iter().enumerate() {
                     h.join();
                     println!("Thread {} finished", i);
                 }
+
+                
+
                 println!("Done");
 
+                pipeline.print_last_position();
 
                 // let mut pipeline = Pipeline::new("example pipeline".to_string());
 

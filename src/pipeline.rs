@@ -7,7 +7,7 @@ use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::thread;
+use std::{thread, time};
 
 
 #[derive(Debug)]
@@ -22,7 +22,7 @@ pub struct Pipeline {
 
     //base : BaseElement<'a>,
     elements : Vec<(Arc<Mutex<Element>>, Arc<AtomicUsize>)>,
-//    data_queue : Vec<PipeLineStreamFormat>,
+    data_queue : Vec<PipeLineStreamFormat>,
 
 }
 
@@ -34,8 +34,16 @@ impl Pipeline {
             //next : None,
             //pipeline : None,
             elements : Vec::new(),
-       //     data_queue : Vec::new(),
+            data_queue : Vec::new(),
         }
+    }
+
+    pub fn print_last_position(&self) {
+        if self.elements.is_empty() {
+            println!("0");
+        }
+
+        println!("{:?}", self.elements.last().unwrap().1);
     }
 
     pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
@@ -81,6 +89,15 @@ impl Pipeline {
         handles
     }
 
+    pub fn quick_test(&self) {
+
+        println!("quick_test");
+        let ten_millis = time::Duration::from_millis(5000);
+        thread::sleep(ten_millis);
+
+        self.elements[0].1.fetch_add(100, Ordering::SeqCst);
+
+    }
 
 }
 
