@@ -56,6 +56,12 @@ impl Pipeline {
         Ok(()) 
     }
 
+    pub fn attach_output_pad_to_input_pad(output : &Element, input : &Element, pad_name : &str) -> PipelineResult<()> {
+        // Confirm pad name in correct
+
+        Ok(())
+    } 
+
     // pub fn get_first_element(&self) -> &Element {
     //     return self.elements[0];
     // }
