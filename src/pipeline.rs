@@ -7,7 +7,7 @@ use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::thread;
+use std::{thread, time};
 
 
 #[derive(Debug)]
@@ -89,6 +89,15 @@ impl Pipeline {
         handles
     }
 
+    pub fn quick_test(&self) {
+
+        println!("quick_test");
+        let ten_millis = time::Duration::from_millis(5000);
+        thread::sleep(ten_millis);
+
+        self.elements[0].1.fetch_add(100, Ordering::SeqCst);
+
+    }
 
 }
 

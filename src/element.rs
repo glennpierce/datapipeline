@@ -62,7 +62,7 @@ pub trait Element : Send {
     // fn initalise(&mut self);
     // fn get_name(&self) -> &str;
     
-    fn run(&self, position : Arc<AtomicUsize>);
+    fn run(&mut self, position : Arc<AtomicUsize>);
     
     // fn get_previous_element(&self) -> &Element {
 
