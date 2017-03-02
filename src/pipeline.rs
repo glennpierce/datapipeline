@@ -38,6 +38,14 @@ impl Pipeline {
         }
     }
 
+    pub fn print_last_position(&self) {
+        if self.elements.is_empty() {
+            println!("0");
+        }
+
+        println!("{:?}", self.elements.last().unwrap().1);
+    }
+
     pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
         //     // if let Some(found_element) = self.find_element(element.get_name()) {
     //     //         debug!("Element with that name already exits in pipeline");

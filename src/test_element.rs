@@ -17,8 +17,14 @@ impl TestElement {
 impl Element for TestElement {
 
     fn run(&self, position :  Arc<AtomicUsize>) {
-        loop {
-            println!("Hello");
+        let mut i = 0;
+      
+        while i<100 {
+            //println!("Hello");
+            let v = position.fetch_add(1, Ordering::SeqCst);
+            println!("{:?}", v);
+            i += 1;
         }
+      
     }
 }
