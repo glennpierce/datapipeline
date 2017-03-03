@@ -80,7 +80,7 @@ pub trait Element : Send {
     // fn initalise(&mut self);
     fn get_name(&self) -> &str;
     
-    fn run(&mut self, position : Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>);
+    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
     
     //fn get_input_pads(&mut self) -> &[&ElementPad];
     fn get_input_pad(&self) -> &ElementPad;

@@ -57,7 +57,8 @@ impl<'a> Pipeline<'a> {
     //     println!("{:?}", self.elements.last().unwrap().1);
     // }
 
-    pub fn add_element<T: Element + 'static>(&mut self, element: &T) -> PipelineResult<()> {
+    //pub fn add_element<T: Element + 'static>(&mut self, element: &T) -> PipelineResult<()> {
+    pub fn add_element(&mut self, element: &'a Element) -> PipelineResult<()> {
         //     // if let Some(found_element) = self.find_element(element.get_name()) {
     //     //         debug!("Element with that name already exits in pipeline");
     //     //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
@@ -74,7 +75,8 @@ impl<'a> Pipeline<'a> {
         Ok(()) 
     }
 
-    pub fn attach_output_pad_to_input_pad(&mut self, output : &Element, input : &Element) -> PipelineResult<()> {
+    //pub fn attach_output_pad_to_input_pad<T: Element + 'static>(&mut self, output : &T, input : &T) -> PipelineResult<()> {
+    pub fn attach_output_pad_to_input_pad(&mut self, output : &'a Element, input : &'a Element) -> PipelineResult<()> {
         // Confirm pad name in correct
 
  //       let mut out = output;
@@ -126,12 +128,29 @@ impl<'a> Pipeline<'a> {
         //let mut last_element;
 
         for (i, e) in self.elements.iter().enumerate() {
-            let element_clone = e.clone();
+            //let element_clone = e.clone();
             //last_element = &elem;
             //let c = e.1.clone();
 
+            let conn = self.connections.get(e.get_name()).unwrap();
+
+            let element_clone = Arc::new(Mutex::new(e)).clone();
+           // let c = e.1.clone();
+
+            //elf.connections.insert(output.get_name().to_string(), (sender, receiver));
+            //map.insert(1, "a");
+        //assert_eq!(map.get(&1), Some(&"a"));
+        //assert_eq!(map.get(&2), None);
+
+            
+
+        //    let sender = output.get_output_pad().conn.0.clone();
+      //  let receiver = output.get_output_pad().conn.1.clone();
+         
+
             handles.push(thread::spawn(move || {
                 //element_clone.lock().unwrap().run(c);
+                element_clone.lock().unwrap().run(conn.0, conn.1);
                 //  fn run(&mut self, position : Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>);
    
             }));

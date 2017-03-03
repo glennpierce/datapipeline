@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
 use std::{thread, time};
@@ -27,7 +28,7 @@ impl Element for FakeSourceElement {
         "FakeSourceElement"
     }
 
-    fn run(&mut self, position :  Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>) {
+    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
         let mut i : usize = 0;
        // let max = position.load(Ordering::Relaxed);
       

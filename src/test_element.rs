@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
 use std::{thread, time};
@@ -27,7 +28,7 @@ impl Element for TestElement{
         "TestElement"
     }
 
-    fn run(&mut self, position :  Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>) {
+    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
         let mut i : usize = 0;
        // let max = position.load(Ordering::Relaxed);
       
@@ -35,19 +36,19 @@ impl Element for TestElement{
 
         loop {
 
-            let max = position.fetch_add(0, Ordering::SeqCst);
+            // let max = position.fetch_add(0, Ordering::SeqCst);
 
-            println!("max {}", max);
+            // println!("max {}", max);
 
-            while i < max {
-                //println!("Hello");
+            // while i < max {
+            //     //println!("Hello");
 
-                //let v = position.fetch_add(1, Ordering::SeqCst);
-                println!("{:?}", i);
-                i += 1;
+            //     //let v = position.fetch_add(1, Ordering::SeqCst);
+            //     println!("{:?}", i);
+            //     i += 1;
 
-                thread::sleep(time::Duration::from_millis(100));
-            }
+            //     thread::sleep(time::Duration::from_millis(100));
+            // }
 
             thread::sleep(time::Duration::from_millis(1000));
         }
