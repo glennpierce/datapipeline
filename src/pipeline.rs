@@ -4,60 +4,97 @@
 use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
 
 //use base_element::BaseElement;
+use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
 use std::{thread, time};
+use std::collections::HashMap;
 
+use element::ElementPadConnection;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum PipeLineError {
     ELEMENT_ALREADY_EXISTS,
+    ELEMENT_CANNOT_CONNECT_TO_SELF,
 }
 
 pub type PipelineResult<T> = Result<T, PipeLineError>;
+
 pub type PipeLineStreamFormat = (String, String);
 
-pub struct Pipeline {
+pub struct Pipeline<'a> {
 
     //base : BaseElement<'a>,
-    elements : Vec<(Arc<Mutex<Element>>, Arc<AtomicUsize>)>,
+    name : String,
+    //elements : Vec<Arc<Mutex<Element>>>,
+    elements : Vec<&'a Element>,
+    connections : HashMap<String, ElementPadConnection>,
     //data_queue : Vec<PipeLineStreamFormat>,
 
 }
 
-impl Pipeline {
+impl<'a> Pipeline<'a> {
 
     pub fn new(name: String) -> Self {
         Pipeline{
-            //name : name,
+            name : name,
             //next : None,
             //pipeline : None,
             elements : Vec::new(),
+            connections : HashMap::new(),
             //data_queue : Vec::new(),
+
         }
     }
 
-    pub fn print_last_position(&self) {
-        if self.elements.is_empty() {
-            println!("0");
-        }
+    // pub fn print_last_position(&self) {
+    //     if self.elements.is_empty() {
+    //         println!("0");
+    //     }
 
-        println!("{:?}", self.elements.last().unwrap().1);
-    }
+    //     println!("{:?}", self.elements.last().unwrap().1);
+    // }
 
-    pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
+    pub fn add_element<T: Element + 'static>(&mut self, element: &T) -> PipelineResult<()> {
         //     // if let Some(found_element) = self.find_element(element.get_name()) {
     //     //         debug!("Element with that name already exits in pipeline");
     //     //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
     //     // }; // <-- immutable borrow ends here
     //     // now you can re-borrow mutably
-        self.elements.push((Arc::new(Mutex::new(element)), Arc::new(AtomicUsize::new(0))));
+
+    
+    //    let safe_element = Arc::new(Mutex::new(element));
+    //    self.elements.push(safe_element);
+
+        self.elements.push(element);
+
+        //Ok(safe_element) 
         Ok(()) 
     }
 
-    pub fn attach_output_pad_to_input_pad(output : &Element, input : &Element, pad_name : &str) -> PipelineResult<()> {
+    pub fn attach_output_pad_to_input_pad(&mut self, output : &Element, input : &Element) -> PipelineResult<()> {
         // Confirm pad name in correct
+
+ //       let mut out = output;
+
+        // Assert that output element and input element's are not the same.
+   //     if output.get_name() == input.get_name() {
+   //         return Err(PipeLineError::ELEMENT_CANNOT_CONNECT_TO_SELF);
+   //     }
+
+        let sender = output.get_output_pad().conn.0.clone();
+        let receiver = output.get_output_pad().conn.1.clone();
+         
+         //element_clone.lock().unwrap()
+
+//pub type ElementPadConnection = (SyncSender<PipeLineStreamFormat>, Receiver<PipeLineStreamFormat>);
+
+        self.connections.insert(output.get_name().to_string(), (sender, receiver));
+
+//element_clone.lock().unwrap()
+
 
         Ok(())
     } 
@@ -85,11 +122,18 @@ impl Pipeline {
 
     pub fn run(&self) -> Vec<thread::JoinHandle<()>>{
         let mut handles = Vec::with_capacity(self.elements.len());
-        for e in &self.elements {
-            let elem = e.0.clone();
-            let c = e.1.clone();
+
+        //let mut last_element;
+
+        for (i, e) in self.elements.iter().enumerate() {
+            let element_clone = e.clone();
+            //last_element = &elem;
+            //let c = e.1.clone();
+
             handles.push(thread::spawn(move || {
-                elem.lock().unwrap().run(c);
+                //element_clone.lock().unwrap().run(c);
+                //  fn run(&mut self, position : Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>);
+   
             }));
         }
         handles
@@ -101,7 +145,7 @@ impl Pipeline {
         let ten_millis = time::Duration::from_millis(5000);
         thread::sleep(ten_millis);
 
-        self.elements[0].1.fetch_add(100, Ordering::SeqCst);
+        //self.elements[0].1.fetch_add(100, Ordering::SeqCst);
 
     }
 

@@ -5,15 +5,15 @@ use std::{thread, time};
 use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
 use pipeline::PipeLineStreamFormat;
 
-pub struct TestElement {
+pub struct FakeSourceElement {
     output_pad : ElementPad,
     input_pad1 : ElementPad,
 }
 
-impl TestElement {
+impl FakeSourceElement {
 
     pub fn new() -> Self {
-        TestElement{
+        FakeSourceElement{
              output_pad : ElementPad::new("output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
              input_pad1 : ElementPad::new("input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
         }
@@ -21,10 +21,10 @@ impl TestElement {
 }
 
 
-impl Element for TestElement{
+impl Element for FakeSourceElement {
 
     fn get_name(&self) -> &str {
-        "TestElement"
+        "FakeSourceElement"
     }
 
     fn run(&mut self, position :  Arc<AtomicUsize>, output : SyncSender<PipeLineStreamFormat>, input : Receiver<PipeLineStreamFormat>) {
@@ -33,23 +33,17 @@ impl Element for TestElement{
       
         //println!("max {}", max);
 
+        let mut count : u64 = 0;
+
         loop {
 
-            let max = position.fetch_add(0, Ordering::SeqCst);
+            pub type PipeLineStreamFormat = (String, String);
 
-            println!("max {}", max);
-
-            while i < max {
-                //println!("Hello");
-
-                //let v = position.fetch_add(1, Ordering::SeqCst);
-                println!("{:?}", i);
-                i += 1;
-
-                thread::sleep(time::Duration::from_millis(100));
-            }
+            output.send((count.to_string(), count.to_string()));
 
             thread::sleep(time::Duration::from_millis(1000));
+
+            count += 1;
         }
       
     }

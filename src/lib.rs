@@ -19,6 +19,7 @@ use std::sync::Mutex;
 use std::rc::Weak;
 
 mod element;
+mod fake_source_element;
 mod test_element;
 mod base_element;
 mod pipeline;
@@ -111,6 +112,8 @@ mod tests {
         use pipeline::Pipeline;
         use element::Element;
         use test_element::TestElement;
+        use fake_source_element::FakeSourceElement;
+
         //use file_source_element::FileSourceElement;
         //use ::ConsoleEchoElement;
         use std::fs::File;
@@ -125,13 +128,22 @@ mod tests {
 
 
                 let mut pipeline = Pipeline::new("example pipeline".to_string());
-                pipeline.add_element(TestElement::new()).unwrap();
+                let mut fake_src = FakeSourceElement::new();
+                let mut test_element = TestElement::new();
+
+                pipeline.add_element(&fake_src).unwrap();
+                pipeline.add_element(&test_element).unwrap();
+                
+               // let mut fake_src_ref : &Element = &fake_src;
+                pipeline.attach_output_pad_to_input_pad(&fake_src, &test_element).unwrap();
+
+
                 let handles = pipeline.run();
                 
                 println!("Pipeline started - waiting for {} threads to finish", handles.len());
 
                 pipeline.quick_test(); 
-                
+
                 io::stdout().flush().ok().expect("Could not flush stdout");
                 for (i, h) in handles.into_iter().enumerate() {
                     h.join();
@@ -142,7 +154,7 @@ mod tests {
 
                 println!("Done");
 
-                pipeline.print_last_position();
+                //pipeline.print_last_position();
 
                 // let mut pipeline = Pipeline::new("example pipeline".to_string());
 
