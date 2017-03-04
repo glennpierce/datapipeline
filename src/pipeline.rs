@@ -47,10 +47,7 @@ impl Pipeline {
 
     fn find_element_pad<'a>(&'a self, name : &str, pad_name : &str) -> PipelineResult<&ElementPad> {
 
-        let safe_element = try!(self.find_element(name));
-
-        let tmp = safe_element.clone();
-        let element = tmp.lock().unwrap();
+        let element = try!(self.find_element(name)).clone().lock().unwrap();
 
         let pad = try!(element.get_pad(pad_name));
         
