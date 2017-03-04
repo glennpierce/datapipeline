@@ -2,6 +2,7 @@
 
 extern crate time;
 extern crate chrono;
+extern crate crossbeam;
 
 #[macro_use]
 extern crate log;
@@ -21,7 +22,6 @@ use std::rc::Weak;
 mod element;
 mod fake_source_element;
 mod test_element;
-mod base_element;
 mod pipeline;
 mod file_source_element;
 

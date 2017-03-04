@@ -15,8 +15,8 @@ impl FakeSourceElement {
 
     pub fn new() -> Self {
         FakeSourceElement{
-             output_pad : ElementPad::new("output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
-             input_pad1 : ElementPad::new("input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
+             output_pad : ElementPad::new("fake_source_output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
+             input_pad1 : ElementPad::new("fake_source_input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
         }
     }
 }
@@ -28,20 +28,30 @@ impl Element for FakeSourceElement {
         "FakeSourceElement"
     }
 
-    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
-        let mut i : usize = 0;
-       // let max = position.load(Ordering::Relaxed);
-      
-        //println!("max {}", max);
+    // fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
+    //     let mut count : u64 = 0;
 
+    //     loop {
+
+    //         //pub type PipeLineStreamFormat = (String, String);
+
+    //         println!("Sending from FakeSourceElement {}", count);
+    //         output.send((count.to_string(), count.to_string()));
+
+    //         thread::sleep(time::Duration::from_millis(1000));
+
+    //         count += 1;
+    //     }
+      
+    // }
+
+     fn run(&self) {
         let mut count : u64 = 0;
 
         loop {
 
-            pub type PipeLineStreamFormat = (String, String);
-
-            output.send((count.to_string(), count.to_string()));
-
+            println!("Sending from FakeSourceElement {}", count);
+           
             thread::sleep(time::Duration::from_millis(1000));
 
             count += 1;

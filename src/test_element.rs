@@ -15,8 +15,8 @@ impl TestElement {
 
     pub fn new() -> Self {
         TestElement{
-             output_pad : ElementPad::new("output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
-             input_pad1 : ElementPad::new("input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
+             output_pad : ElementPad::new("test_element_output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
+             input_pad1 : ElementPad::new("test_element_input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
         }
     }
 }
@@ -28,27 +28,27 @@ impl Element for TestElement{
         "TestElement"
     }
 
-    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
-        let mut i : usize = 0;
-       // let max = position.load(Ordering::Relaxed);
-      
-        //println!("max {}", max);
+    // fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
+    //     let mut i : usize = 0;
+    //    // let max = position.load(Ordering::Relaxed);
 
+    //     loop {
+
+    //         let val = input.lock().unwrap().recv().unwrap();
+
+    //         println!("TestElement: {:?}", val);
+
+    //         thread::sleep(time::Duration::from_millis(1000));
+    //     }
+      
+    // }
+
+    fn run(&self) {
+        let mut i : usize = 0;
+    
         loop {
 
-            // let max = position.fetch_add(0, Ordering::SeqCst);
-
-            // println!("max {}", max);
-
-            // while i < max {
-            //     //println!("Hello");
-
-            //     //let v = position.fetch_add(1, Ordering::SeqCst);
-            //     println!("{:?}", i);
-            //     i += 1;
-
-            //     thread::sleep(time::Duration::from_millis(100));
-            // }
+            println!("TestElement");
 
             thread::sleep(time::Duration::from_millis(1000));
         }

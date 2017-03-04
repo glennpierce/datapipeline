@@ -45,14 +45,15 @@ pub struct ElementPad {
 impl ElementPad {
     pub fn new(name : String, pad_type : ElementPadType, pad_data_type: ElementPadDataType) -> Self {
 
-        let channel = sync_channel::<PipeLineStreamFormat>(0);
+        let channel = sync_channel::<PipeLineStreamFormat>(1000);
+        let sender = channel.0; //Arc::new( Mutex::new(channel.0));
         let receiver = Arc::new(Mutex::new(channel.1));
      
         ElementPad{
             name : name,
             pad_type : pad_type,
             pad_data_type : pad_data_type,
-            conn : (channel.0, receiver),
+            conn : (sender, receiver),
         }
     }
 
@@ -63,36 +64,16 @@ impl ElementPad {
 }
 
 
-
-
-
-
-
-
 pub trait Element : Send {
 
     //type ElementType = MyIterator<'a>;
 
-    //fn new(&mut self) -> Self;
-    
-    // fn pipeline(&self) -> &Element;
-
-    // fn initalise(&mut self);
     fn get_name(&self) -> &str;
     
-    fn run(&mut self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
-    
+    //fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
+    fn run(&self);
+
     //fn get_input_pads(&mut self) -> &[&ElementPad];
     fn get_input_pad(&self) -> &ElementPad;
     fn get_output_pad(&self) -> &ElementPad;
-
-    // fn get_previous_element(&self) -> &Element {
-
-    // }
-
-    // fn attach_output_pad(sink_element : BaseElement, sink : &str) {
-    //     //if source.pad_type != ElementPadType.INPUT {
-    //     //    panic();
-    //     //}
-    // }pipeline
 }
