@@ -72,27 +72,6 @@ mod tests {
                 
 
                 println!("Done");
-
-                //pipeline.print_last_position();
-
-                // let mut pipeline = Pipeline::new("example pipeline".to_string());
-
-                // //let file_source_element = FileSourceElement::new("My Source".to_string(), file);
-                // //pipeline.add_element(&file_source_element);
-
-                // let e1 = TestElement::new();
-                // pipeline.add_element(Arc::new(Mutex::new(e1))).unwrap();
-
-
-                // pipeline.run();
-
-                //let echo_element = ConsoleEchoElement::new("My Echo".to_string());
-
-             // file_source_element.attach_output_pad(source_pad : &str, sink_element : BaseElement, sink : &str) {
-              //echo_element.attach_pads(file_source_element, );
-
-                //file_source_element.run();
-                //echo_element.run();
             },
             Err(e) => {
                 // fallback in case of failure.
