@@ -25,7 +25,7 @@ pub type PipeLineStreamFormat = (String, String);
 
 pub struct Pipeline<'a> {
     name : String,
-    elements : Vec<Arc<Mutex<&'a Element>>>,
+    elements : Vec<&'a Element>,
     connections : HashMap<String, ElementPadConnection>,
 }
 
@@ -40,19 +40,11 @@ impl<'a> Pipeline<'a> {
     }
 
     pub fn add_element(&mut self, element: &'a Element) -> PipelineResult<()> {
-        self.elements.push(Arc::new(Mutex::new(element)));
+        self.elements.push(element);
         Ok(()) 
     }
 
     pub fn attach_output_pad_to_input_pad(&mut self, output : &'a Element, input : &'a Element) -> PipelineResult<()> {
-        // Confirm pad name in correct
-
- //       let mut out = output;
-
-        // Assert that output element and input element's are not the same.
-   //     if output.get_name() == input.get_name() {
-   //         return Err(PipeLineError::ELEMENT_CANNOT_CONNECT_TO_SELF);
-   //     }
 
         let output_pad = output.get_output_pad();
         let input_pad = input.get_input_pad();
@@ -70,7 +62,7 @@ impl<'a> Pipeline<'a> {
         let mut handles = Vec::with_capacity(self.elements.len());
 
         for e in &self.elements {
-            let element_clone = e.clone();
+            let element_clone = Arc::new(Mutex::new(e)).clone();
 
             // We unwrap() the return value to assert that we are not expecting
             // threads to ever fail while holding the lock.
