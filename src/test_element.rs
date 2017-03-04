@@ -28,32 +28,21 @@ impl Element for TestElement{
         "TestElement"
     }
 
-    // fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
-    //     let mut i : usize = 0;
-    //    // let max = position.load(Ordering::Relaxed);
-
-    //     loop {
-
-    //         let val = input.lock().unwrap().recv().unwrap();
-
-    //         println!("TestElement: {:?}", val);
-
-    //         thread::sleep(time::Duration::from_millis(1000));
-    //     }
-      
-    // }
-
-    fn run(&self) {
+    fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
         let mut i : usize = 0;
-    
+       // let max = position.load(Ordering::Relaxed);
+
         loop {
 
-            println!("TestElement");
+            let val = input.lock().unwrap().recv().unwrap();
+
+            println!("TestElement: {:?}", val);
 
             thread::sleep(time::Duration::from_millis(1000));
         }
       
     }
+
 
     // fn get_input_pads<'a>(&'a mut self) -> &'a[&'a ElementPad]
     // {

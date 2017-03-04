@@ -39,25 +39,11 @@ impl<'a> Pipeline<'a> {
         }
     }
 
-    //pub fn add_element<T: Element + 'static>(&mut self, element: &T) -> PipelineResult<()> {
     pub fn add_element(&mut self, element: &'a Element) -> PipelineResult<()> {
-        //     // if let Some(found_element) = self.find_element(element.get_name()) {
-    //     //         debug!("Element with that name already exits in pipeline");
-    //     //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-    //     // }; // <-- immutable borrow ends here
-    //     // now you can re-borrow mutably
-
-    
-   //     let safe_element = Arc::new(Mutex::new(element));
         self.elements.push(Arc::new(Mutex::new(element)));
-
-        //self.elements.push(element);
-
-        //Ok(safe_element) 
         Ok(()) 
     }
 
-    //pub fn attach_output_pad_to_input_pad<T: Element + 'static>(&mut self, output : &T, input : &T) -> PipelineResult<()> {
     pub fn attach_output_pad_to_input_pad(&mut self, output : &'a Element, input : &'a Element) -> PipelineResult<()> {
         // Confirm pad name in correct
 
@@ -95,10 +81,7 @@ impl<'a> Pipeline<'a> {
             
             handles.push(thread::spawn(move || {
                 
-                //element.run(conn.0.clone(), conn.1.clone());
-                element_clone.lock().unwrap().run();
-
-                //element.run();
+                element.run(conn.0.clone(), conn.1.clone());
             }));
         }
         handles
@@ -109,9 +92,6 @@ impl<'a> Pipeline<'a> {
         println!("quick_test");
         let ten_millis = time::Duration::from_millis(5000);
         thread::sleep(ten_millis);
-
-        //self.elements[0].1.fetch_add(100, Ordering::SeqCst);
-
     }
 
 }

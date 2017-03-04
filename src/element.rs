@@ -56,11 +56,6 @@ impl ElementPad {
             conn : (sender, receiver),
         }
     }
-
-    // pub fn send_on_output(&self, index : u8) {
-    //     //let mut map = self.inputs; 
-    //     self.outputs[index].comm[0].send(id).unwrap();
-    // }
 }
 
 
@@ -70,10 +65,8 @@ pub trait Element : Send {
 
     fn get_name(&self) -> &str;
     
-    //fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
-    fn run(&self);
+    fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
 
-    //fn get_input_pads(&mut self) -> &[&ElementPad];
     fn get_input_pad(&self) -> &ElementPad;
     fn get_output_pad(&self) -> &ElementPad;
 }
