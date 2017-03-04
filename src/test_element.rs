@@ -3,18 +3,21 @@ use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
 use std::{thread, time};
-use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
 use pipeline::PipeLineStreamFormat;
 
+use element::*;
+
 pub struct TestElement {
+    name : String,
     output_pad : ElementPad,
     input_pad1 : ElementPad,
 }
 
 impl TestElement {
 
-    pub fn new() -> Self {
+    pub fn new(name : &str) -> Self {
         TestElement{
+            name : name.to_string(),
              output_pad : ElementPad::new("test_element_output".to_string(), ElementPadType::OUTPUT, ElementPadDataType::STRING),
              input_pad1 : ElementPad::new("test_element_input".to_string(), ElementPadType::INPUT, ElementPadDataType::STRING),
         }
@@ -24,8 +27,12 @@ impl TestElement {
 
 impl Element for TestElement{
 
-    fn get_name(&self) -> &str {
-        "TestElement"
+    fn get_name(&self) -> String {
+        self.name.to_string()
+    }
+
+    fn get_type(&self) -> String {
+        "TestElement".to_string()
     }
 
     // fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
@@ -60,11 +67,23 @@ impl Element for TestElement{
     //     &[&self.input_pad1]
     // }
 
-    fn get_input_pad<'a>(&'a self) -> &'a ElementPad {
-        &self.input_pad1
+    fn get_pad<'a>(&'a self, name : &str) -> ElementResult<&'a ElementPad> {
+        if self.input_pad1.name == name {
+            return Ok(&self.input_pad1);
+        }
+        else if self.output_pad.name == name {
+            return Ok(&self.output_pad);
+        }
+        else {
+            return Err(ElementError::PAD_DOES_NOT_EXIST);
+        }
     }
+    
+    // fn get_input_pad<'a>(&'a self) -> &'a ElementPad {
+    //     &self.input_pad1
+    // }
 
-    fn get_output_pad<'a>(&'a self) -> &'a ElementPad {
-        &self.output_pad
-    }
+    // fn get_output_pad<'a>(&'a self) -> &'a ElementPad {
+    //     &self.output_pad
+    // }
 }

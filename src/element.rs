@@ -8,9 +8,14 @@ use pipeline::PipeLineStreamFormat;
 #[derive(Debug)]
 pub enum ElementError {
     FAILED_TO_READ_INPUT,
+    PAD_DOES_NOT_EXIST,
+    ELEMENT_NOT_FOUND,
+    ELEMENT_ALREADY_EXISTS,
+    ELEMENT_CANNOT_CONNECT_TO_SELF,
 }
 
-pub type ElementResult<T> = Result<T, Element>;
+pub type ElementResult<T> = Result<T, ElementError>;
+
 
 pub type ElementPadConnection = (SyncSender<PipeLineStreamFormat>, Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
 
@@ -68,12 +73,16 @@ pub trait Element : Send {
 
     //type ElementType = MyIterator<'a>;
 
-    fn get_name(&self) -> &str;
+    fn get_name(&self) -> String;
+
+    fn get_type(&self) -> String;
     
+    fn get_pad(&self, name : &str) -> ElementResult<&ElementPad>;
+
     //fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
     fn run(&self);
 
     //fn get_input_pads(&mut self) -> &[&ElementPad];
-    fn get_input_pad(&self) -> &ElementPad;
-    fn get_output_pad(&self) -> &ElementPad;
+    //fn get_input_pad(&self) -> &ElementPad;
+    //fn get_output_pad(&self) -> &ElementPad;
 }

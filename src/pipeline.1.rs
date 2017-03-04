@@ -1,3 +1,8 @@
+//use element::*;
+//use base_element::*;
+
+use element::{Element, ElementPad, ElementPadType, ElementPadDataType};
+
 use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -6,19 +11,21 @@ use std::sync::mpsc::{SyncSender, Receiver, sync_channel};
 use std::{thread, time};
 use std::collections::HashMap;
 
-use element::*;
+use element::ElementPadConnection;
 
+#[derive(Clone, Debug)]
+pub enum PipeLineError {
+    ELEMENT_ALREADY_EXISTS,
+    ELEMENT_CANNOT_CONNECT_TO_SELF,
+}
 
-pub type PipelineResult<T> = Result<T, ElementError>;
+pub type PipelineResult<T> = Result<T, PipeLineError>;
 
 pub type PipeLineStreamFormat = (String, String);
 
-type ThreadSafeElement = Arc<Mutex<Element>>;
-//type ThreadSafeRefElement = Arc<Mutex<&'a Element>>;
-
 pub struct Pipeline {
     name : String,
-    elements : HashMap<String, ThreadSafeElement>,
+    elements : Vec<Arc<Mutex<Element>>>,
     connections : HashMap<String, ElementPadConnection>,
 }
 
@@ -27,34 +34,9 @@ impl Pipeline {
     pub fn new(name: String) -> Self {
         Pipeline{
             name : name,
-            elements : HashMap::new(),
+            elements : Vec::new(),
             connections : HashMap::new(),
         }
-    }
-
-    fn find_element<'a>(&'a self, name : &str) -> PipelineResult<&'a ThreadSafeElement> {
-
-        let option = self.elements.get(name);
-
-        if !option.is_some()
-        {
-            warn!("Element with name {} not found in pipeline", name);
-            return Err(ElementError::ELEMENT_NOT_FOUND)
-        }; 
-        
-        Ok(&option.unwrap())
-    }
-
-    fn find_element_pad<'a>(&'a self, name : &str, pad_name : &str) -> PipelineResult<&'a ElementPad> {
-
-        let safe_element = try!(self.find_element(name));
-
-        let tmp = safe_element.clone();
-        let element = tmp.lock().unwrap();
-
-        let pad = try!(element.get_pad(pad_name));
-        
-        Ok(pad)
     }
 
     pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
@@ -67,7 +49,7 @@ impl Pipeline {
 
     
    //     let safe_element = Arc::new(Mutex::new(element));
-        self.elements.insert(element.get_name(), Arc::new(Mutex::new(element)));
+        self.elements.push(Arc::new(Mutex::new(element)));
 
         //self.elements.push(element);
 
@@ -75,33 +57,30 @@ impl Pipeline {
         Ok(()) 
     }
 
-    //pub fn attach_output_pad_to_input_pad<T: Element + 'static>(&mut self, output : &T, input : &T) -> PipelineResult<()> {
-    pub fn attach_output_pad_to_input_pad(&mut self, output_name : &str, output_pad_name : &str,
-                                                     input_name : &str, input_pad_name : &str) -> PipelineResult<()> {
+//     pub fn attach_output_pad_to_input_pad<T: Element + 'static>(&mut self, output : &T, input : &T) -> PipelineResult<()> {
+//     //pub fn attach_output_pad_to_input_pad(&mut self, output : &'a Element, input : &'a Element) -> PipelineResult<()> {
+//         // Confirm pad name in correct
+//         // Assert that output element and input element's are not the same.
+//    //     if output.get_name() == input.get_name() {
+//    //         return Err(PipeLineError::ELEMENT_CANNOT_CONNECT_TO_SELF);
+//    //     }
 
-        //let output = try!(self.find_element(output_name));
-        //let input = try!(self.find_element(input_name));
-    
-        let output_pad = try!(self.find_element_pad(output_name, output_pad_name));
-        let input_pad = try!(self.find_element_pad(input_name, input_pad_name));
-
-        //let output_pad = output.get_output_pad();
-        //let input_pad = input.get_input_pad();
-
-        let sender = output_pad.conn.0.clone();
-        let receiver = input_pad.conn.1.clone();
+//         let output_pad = output.get_output_pad();
+//         let input_pad = input.get_input_pad();
+//         let sender = output_pad.conn.0.clone();
+//         let receiver = input_pad.conn.1.clone();
          
-        println!("connecting pads, sender : {} -> receiver {}", output_pad.name, input_pad.name);
+//         println!("connecting pads, sender : {} -> receiver {}", output_pad.name, input_pad.name);
 
-        self.connections.insert(output_name.to_string(), (sender, receiver));
+//         self.connections.insert(output.get_name().to_string(), (sender, receiver));
 
-        Ok(())
-    } 
+//         Ok(())
+//     } 
 
     pub fn run(&self) -> Vec<thread::JoinHandle<()>>{
 
         let mut handles = Vec::with_capacity(self.elements.len());
-        for e in self.elements.values() {
+        for e in &self.elements {
             let elem = e.clone();
             //let c = e.1.clone();
             handles.push(thread::spawn(move || {

@@ -126,16 +126,16 @@ mod tests {
         match File::open("data/test.txt") {
             Ok(file) => {
 
-                let mut fake_src = FakeSourceElement::new();
-                let mut test_element = TestElement::new();
+                let mut fake_src = FakeSourceElement::new("fake_source");
+                let mut test_element = TestElement::new("test_element");
                 let mut pipeline = Pipeline::new("example pipeline".to_string());
 
-                pipeline.add_element(&fake_src).unwrap();
-                pipeline.add_element(&test_element).unwrap();
+                pipeline.add_element(fake_src).unwrap();
+                pipeline.add_element(test_element).unwrap();
                 
                // let mut fake_src_ref : &Element = &fake_src;
-                pipeline.attach_output_pad_to_input_pad(&fake_src, &test_element).unwrap();
-
+                pipeline.attach_output_pad_to_input_pad("fake_source", "fake_source_output",
+                                                        "test_element", "test_element_input").unwrap();
 
                 let handles = pipeline.run();
                 
