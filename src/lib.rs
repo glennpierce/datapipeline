@@ -23,85 +23,8 @@ mod element;
 mod fake_source_element;
 mod test_element;
 mod pipeline;
-mod file_source_element;
 
 use element::*;
-
-//use std::sync::deque::BufferPool;
-
-
-
-
-
-
-// trait PipeLine {
-//     fn create_element(name : &str, type : ElementType);
-// }
-
-
-
-
-
-// struct ConsoleEchoElement {
-//     base : BaseElement,
-// }
-
-// impl ConsoleEchoElement {
-//     fn new(name: String) -> Self {
-//         let mut element = ConsoleEchoElement { base : BaseElement::new(name) };
-//         element.initalise();
-//         element
-//     }
-// }
-
-// impl Element for ConsoleEchoElement {
-    
-    
-//     fn initalise(&mut self) {
-//         // TODO needs multiple types
-//         self.base.add_input("data".to_string(), ElementPadType::INPUT, ElementPadDataType::FILE);
-//     }
-
-//     fn run(&self) {
-//         //let (_, rx): (_, Receiver<String>) = mpsc::channel();
-//         //println!("{}", rx.recv().unwrap());    
-
-//         // let channels = &self.base.inputs[0].comm;
-//         // let rx = &(channels.1);
-//         // println!("{}", rx.recv().unwrap());    
-//     }
-// }
-
-
-
-// struct ElementPipeline {
-//     elements : Vec<Element>,
-// }
-
-
-// class Race {
-// Frame createFrame() { return new Frame(); }
-// Wheel createWheel() { return new Wheel(); }
-// Bicycle createBicycle(Frame frame, Wheel front, Wheel rear) {
-// return new Bicycle(frame, front, rear);
-// }
-// // return a complete bicycle without needing any arguments
-// Bicycle completeBicycle() {
-// Frame frame = createFrame();
-// Wheel frontWheel = createWheel();
-// Wheel rearWheel = createWheel();
-// return createBicycle(frame, frontWheel, rearWheel);
-// }
-// Race createRace() {
-// Bicycle bike1 = completeBicycle();
-// Bicycle bike2 = completeBicycle();
-// ...
-// }
-// }
-
-
-
-
 
 
 #[cfg(test)]
@@ -114,8 +37,6 @@ mod tests {
         use test_element::TestElement;
         use fake_source_element::FakeSourceElement;
 
-        //use file_source_element::FileSourceElement;
-        //use ::ConsoleEchoElement;
         use std::fs::File;
         use std::sync::Arc;
         use std::sync::Mutex;
@@ -132,8 +53,7 @@ mod tests {
 
                 pipeline.add_element(fake_src).unwrap();
                 pipeline.add_element(test_element).unwrap();
-                
-               // let mut fake_src_ref : &Element = &fake_src;
+
                 pipeline.attach_output_pad_to_input_pad("fake_source", "fake_source_output",
                                                         "test_element", "test_element_input").unwrap();
 

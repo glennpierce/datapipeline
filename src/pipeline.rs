@@ -45,7 +45,7 @@ impl Pipeline {
         Ok(&option.unwrap())
     }
 
-    fn find_element_pad<'a>(&'a self, name : &str, pad_name : &str) -> PipelineResult<&'a ElementPad> {
+    fn find_element_pad<'a>(&'a self, name : &str, pad_name : &str) -> PipelineResult<&ElementPad> {
 
         let safe_element = try!(self.find_element(name));
 
@@ -58,20 +58,9 @@ impl Pipeline {
     }
 
     pub fn add_element<T: Element + 'static>(&mut self, element: T) -> PipelineResult<()> {
-    //pub fn add_element(&mut self, element: &'a Element) -> PipelineResult<()> {
-        //     // if let Some(found_element) = self.find_element(element.get_name()) {
-    //     //         debug!("Element with that name already exits in pipeline");
-    //     //         return Err(PipeLineError::ELEMENT_ALREADY_EXISTS)
-    //     // }; // <-- immutable borrow ends here
-    //     // now you can re-borrow mutably
 
-    
-   //     let safe_element = Arc::new(Mutex::new(element));
         self.elements.insert(element.get_name(), Arc::new(Mutex::new(element)));
 
-        //self.elements.push(element);
-
-        //Ok(safe_element) 
         Ok(()) 
     }
 
