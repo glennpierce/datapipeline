@@ -12,7 +12,7 @@ pub enum ElementError {
 
 pub type ElementResult<T> = Result<T, Element>;
 
-pub type ElementPadConnection = (SyncSender<PipeLineStreamFormat>, Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
+pub type ElementPadConnection = (Arc<Mutex<SyncSender<PipeLineStreamFormat>>>, Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
 
 #[derive(Clone, Debug)]
 pub enum ElementPadType {
@@ -46,7 +46,7 @@ impl ElementPad {
     pub fn new(name : String, pad_type : ElementPadType, pad_data_type: ElementPadDataType) -> Self {
 
         let channel = sync_channel::<PipeLineStreamFormat>(1000);
-        let sender = channel.0; //Arc::new( Mutex::new(channel.0));
+        let sender = Arc::new(Mutex::new(channel.0)); //Arc::new( Mutex::new(channel.0));
         let receiver = Arc::new(Mutex::new(channel.1));
      
         ElementPad{
@@ -59,13 +59,13 @@ impl ElementPad {
 }
 
 
-pub trait Element : Send {
+pub trait Element : Send + Sync {
 
     //type ElementType = MyIterator<'a>;
 
-    fn get_name(&self) -> &str;
+    fn get_name(&self) -> String;
     
-    fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
+    fn run(&self, output : Arc<Mutex<SyncSender<PipeLineStreamFormat>>>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>);
 
     fn get_input_pad(&self) -> &ElementPad;
     fn get_output_pad(&self) -> &ElementPad;

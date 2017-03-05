@@ -21,18 +21,24 @@ impl TestElement {
     }
 }
 
+unsafe impl Sync for TestElement { }
 
-impl Element for TestElement{
+impl Element for TestElement {
 
-    fn get_name(&self) -> &str {
-        "TestElement"
+    fn get_name(&self) -> String {
+        "TestElement".to_string()
     }
 
-    fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
+    fn run(&self, output : Arc<Mutex<SyncSender<PipeLineStreamFormat>>>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
         let mut i : usize = 0;
+
+        
+
        // let max = position.load(Ordering::Relaxed);
 
         loop {
+
+            println!("pre lock");
 
             let val = input.lock().unwrap().recv().unwrap();
 

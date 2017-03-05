@@ -58,21 +58,8 @@ mod tests {
                 pipeline.attach_output_pad_to_input_pad(&fake_src, &test_element).unwrap();
 
 
-                let handles = pipeline.run();
+                pipeline.run();
                 
-                println!("Pipeline started - waiting for {} threads to finish", handles.len());
-
-                pipeline.quick_test(); 
-
-                io::stdout().flush().ok().expect("Could not flush stdout");
-                for (i, h) in handles.into_iter().enumerate() {
-                    h.join();
-                    println!("Thread {} finished", i);
-                }
-
-                
-
-                println!("Done");
 
                 //pipeline.print_last_position();
 

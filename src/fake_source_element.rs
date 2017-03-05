@@ -22,13 +22,15 @@ impl FakeSourceElement {
 }
 
 
+unsafe impl Sync for FakeSourceElement { }
+
 impl Element for FakeSourceElement {
 
-    fn get_name(&self) -> &str {
-        "FakeSourceElement"
+    fn get_name(&self) -> String {
+        "FakeSourceElement".to_string()
     }
 
-    fn run(&self, output : SyncSender<PipeLineStreamFormat>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
+    fn run(&self, output : Arc<Mutex<SyncSender<PipeLineStreamFormat>>>, input : Arc<Mutex<Receiver<PipeLineStreamFormat>>>) {
         let mut count : u64 = 0;
 
         loop {
@@ -36,7 +38,7 @@ impl Element for FakeSourceElement {
             //pub type PipeLineStreamFormat = (String, String);
 
             println!("Sending from FakeSourceElement {}", count);
-            output.send((count.to_string(), count.to_string()));
+        //    output.send((count.to_string(), count.to_string()));
 
             thread::sleep(time::Duration::from_millis(1000));
 
